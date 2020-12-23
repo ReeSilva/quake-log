@@ -383,7 +383,7 @@ func TestParseLine(t *testing.T) {
 		},
 		// Client user info changed in a game with more then one player
 		{
-			name: "Client user info changed",
+			name: "Client user info changed in a game with more then one player",
 			want: []parser.Match{
 				{
 					Players: []parser.Player{
