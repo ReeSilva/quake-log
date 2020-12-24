@@ -49,22 +49,6 @@ func ParseLine(gameID int, slc *[]Match, line string) error {
 			return errors.New("Trying to update a user that doesn't exists")
 		}
 		(*slc)[gameID].Players[userIndex].Name = pInfos[2]
-	case "ClientDisconnect":
-		if len((*slc)) == 0 {
-			return errors.New("Disconnecting player with no matches running")
-		}
-		if len((*slc)[gameID].Players) == 0 {
-			return errors.New("Disconnecting player with no players on match")
-		}
-		playerID, _ := strconv.Atoi(matchs[2])
-		userIndex := _findUserByID((*slc)[gameID].Players, playerID)
-		if userIndex == -1 {
-			return errors.New("Disconnecting a user that doesn't exists")
-		}
-		indexRemove := userIndex
-		firstSlice := (*slc)[gameID].Players[:indexRemove]
-		lastSlice := (*slc)[gameID].Players[indexRemove+1:]
-		(*slc)[gameID].Players = append(firstSlice, lastSlice...)
 	default:
 		return nil
 	}
