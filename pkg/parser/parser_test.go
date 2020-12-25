@@ -107,12 +107,12 @@ func TestParseLine(t *testing.T) {
 						{
 							KillerID:    2,
 							VictimID:    3,
-							MeanOfDeath: "test",
+							MeanOfDeath: 1,
 						},
 						{
 							KillerID:    3,
 							VictimID:    2,
-							MeanOfDeath: "test",
+							MeanOfDeath: 1,
 						},
 					},
 				},
@@ -139,12 +139,12 @@ func TestParseLine(t *testing.T) {
 							{
 								KillerID:    2,
 								VictimID:    3,
-								MeanOfDeath: "test",
+								MeanOfDeath: 1,
 							},
 							{
 								KillerID:    3,
 								VictimID:    2,
-								MeanOfDeath: "test",
+								MeanOfDeath: 1,
 							},
 						},
 					},
@@ -171,12 +171,12 @@ func TestParseLine(t *testing.T) {
 						{
 							KillerID:    2,
 							VictimID:    3,
-							MeanOfDeath: "test",
+							MeanOfDeath: 1,
 						},
 						{
 							KillerID:    3,
 							VictimID:    2,
-							MeanOfDeath: "test",
+							MeanOfDeath: 1,
 						},
 					},
 				},
@@ -208,12 +208,12 @@ func TestParseLine(t *testing.T) {
 							{
 								KillerID:    2,
 								VictimID:    3,
-								MeanOfDeath: "test",
+								MeanOfDeath: 1,
 							},
 							{
 								KillerID:    3,
 								VictimID:    2,
-								MeanOfDeath: "test",
+								MeanOfDeath: 1,
 							},
 						},
 					},
@@ -322,12 +322,12 @@ func TestParseLine(t *testing.T) {
 						{
 							KillerID:    2,
 							VictimID:    3,
-							MeanOfDeath: "test",
+							MeanOfDeath: 1,
 						},
 						{
 							KillerID:    3,
 							VictimID:    2,
-							MeanOfDeath: "test",
+							MeanOfDeath: 1,
 						},
 					},
 				},
@@ -359,12 +359,12 @@ func TestParseLine(t *testing.T) {
 							{
 								KillerID:    2,
 								VictimID:    3,
-								MeanOfDeath: "test",
+								MeanOfDeath: 1,
 							},
 							{
 								KillerID:    3,
 								VictimID:    2,
-								MeanOfDeath: "test",
+								MeanOfDeath: 1,
 							},
 						},
 					},
@@ -417,6 +417,371 @@ func TestParseLine(t *testing.T) {
 					},
 				},
 				Line: ` 20:38 ClientUserinfoChanged: 3 n\Mocinha\t\0\model\uriel/zael\hmodel\uriel/zael\g_redteam\\g_blueteam\\c1\5\c2\5\hc\100\w\0\l\0\tt\0\tl\0`,
+			},
+		},
+		// World kills a player when has no active match
+		{
+			name:          "World kills a player when has no active",
+			want:          []parser.Match{},
+			expectError:   true,
+			expectedError: "Kill attempt but no match is active",
+			parameters: Parameters{
+				Matchs: []parser.Match{},
+				Line:   ` 21:07 Kill: 1022 2 22: <world> killed Isgalamido by MOD_TRIGGER_HURT`,
+			},
+		},
+		// World kills a player when has no players on match
+		{
+			name:          "World kills a player when has no players on match",
+			want:          []parser.Match{},
+			expectError:   true,
+			expectedError: "Kill attempt but no one is on the match",
+			parameters: Parameters{
+				Matchs: []parser.Match{
+					{
+						Players: []parser.Player{},
+						Events:  []parser.Kill{},
+					},
+				},
+				Line: ` 21:07 Kill: 1022 2 22: <world> killed Isgalamido by MOD_TRIGGER_HURT`,
+			},
+		},
+		// World kills a player that didn't exists
+		{
+			name:          "World kills a player that didn't exists",
+			want:          []parser.Match{},
+			expectedError: "Kill attempt to a non existent player",
+			expectError:   true,
+			parameters: Parameters{
+				Matchs: []parser.Match{
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test2",
+							},
+							{
+								ID:   3,
+								Name: "test3",
+							},
+						},
+						Events: []parser.Kill{},
+					},
+				},
+				Line: ` 21:07 Kill: 1022 7 22: <world> killed Isgalamido by MOD_TRIGGER_HURT`,
+			},
+		},
+		// World kills a player
+		{
+			name: "World kills a player",
+			want: []parser.Match{
+				{
+					Players: []parser.Player{
+						{
+							ID:   2,
+							Name: "test2",
+						},
+						{
+							ID:   3,
+							Name: "test3",
+						},
+					},
+					Events: []parser.Kill{
+						{
+							KillerID:    1022,
+							VictimID:    2,
+							MeanOfDeath: 22,
+						},
+					},
+				},
+			},
+			expectError: false,
+			parameters: Parameters{
+				Matchs: []parser.Match{
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test2",
+							},
+							{
+								ID:   3,
+								Name: "test3",
+							},
+						},
+						Events: []parser.Kill{},
+					},
+				},
+				Line: ` 21:07 Kill: 1022 2 22: <world> killed Isgalamido by MOD_TRIGGER_HURT`,
+			},
+		},
+		// World kills a player in a match when a previous one already exists
+		{
+			name: "World kills a player in a match when a previous one already exists",
+			want: []parser.Match{
+				{
+					Players: []parser.Player{
+						{
+							ID:   2,
+							Name: "test2",
+						},
+						{
+							ID:   3,
+							Name: "test3",
+						},
+					},
+					Events: []parser.Kill{
+						{
+							KillerID:    1022,
+							VictimID:    2,
+							MeanOfDeath: 22,
+						},
+					},
+				},
+				{
+					Players: []parser.Player{
+						{
+							ID:   2,
+							Name: "test22",
+						},
+						{
+							ID:   3,
+							Name: "test33",
+						},
+					},
+					Events: []parser.Kill{
+						{
+							KillerID:    1022,
+							VictimID:    2,
+							MeanOfDeath: 22,
+						},
+					},
+				},
+			},
+			expectError: false,
+			parameters: Parameters{
+				Matchs: []parser.Match{
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test2",
+							},
+							{
+								ID:   3,
+								Name: "test3",
+							},
+						},
+						Events: []parser.Kill{
+							{
+								KillerID:    1022,
+								VictimID:    2,
+								MeanOfDeath: 22,
+							},
+						},
+					},
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test22",
+							},
+							{
+								ID:   3,
+								Name: "test33",
+							},
+						},
+						Events: []parser.Kill{},
+					},
+				},
+				Line: ` 21:07 Kill: 1022 2 22: <world> killed Isgalamido by MOD_TRIGGER_HURT`,
+			},
+		},
+		// A player kills another when has no active match
+		{
+			name:          "A player kills another when has no active match",
+			want:          []parser.Match{},
+			expectError:   true,
+			expectedError: "Kill attempt but no match is active",
+			parameters: Parameters{
+				Matchs: []parser.Match{},
+				Line:   ` 21:07 Kill: 3 2 22: Mocinha killed Isgalamido by MOD_TRIGGER_HURT`,
+			},
+		},
+		// Player kills a player that didn't exists
+		{
+			name:          "Player kills a player that didn't exists",
+			want:          []parser.Match{},
+			expectedError: "Kill attempt to a non existent player",
+			expectError:   true,
+			parameters: Parameters{
+				Matchs: []parser.Match{
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test2",
+							},
+							{
+								ID:   3,
+								Name: "test3",
+							},
+						},
+						Events: []parser.Kill{},
+					},
+				},
+				Line: ` 21:07 Kill: 2 7 22: test2 killed player7 by MOD_TRIGGER_HURT`,
+			},
+		},
+		// Kill attempt by a non existent killer
+		{
+			name:          "Kill attempt by a non existent killer",
+			want:          []parser.Match{},
+			expectedError: "Kill by a non existent player",
+			expectError:   true,
+			parameters: Parameters{
+				Matchs: []parser.Match{
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test2",
+							},
+							{
+								ID:   3,
+								Name: "test3",
+							},
+						},
+						Events: []parser.Kill{},
+					},
+				},
+				Line: ` 21:07 Kill: 7 2 22: player7 killed test2 by MOD_TRIGGER_HURT`,
+			},
+		},
+		// Player kills another
+		{
+			name: "Player kills another",
+			want: []parser.Match{
+				{
+					Players: []parser.Player{
+						{
+							ID:   2,
+							Name: "test2",
+						},
+						{
+							ID:   3,
+							Name: "test3",
+						},
+					},
+					Events: []parser.Kill{
+						{
+							KillerID:    2,
+							VictimID:    3,
+							MeanOfDeath: 22,
+						},
+					},
+				},
+			},
+			expectError: false,
+			parameters: Parameters{
+				Matchs: []parser.Match{
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test2",
+							},
+							{
+								ID:   3,
+								Name: "test3",
+							},
+						},
+						Events: []parser.Kill{},
+					},
+				},
+				Line: ` 21:07 Kill: 2 3 22: test2 killed test3 by MOD_TRIGGER_HURT`,
+			},
+		},
+		// Player kills another in a match when a previous one already exists
+		{
+			name: "Player kills another in a match when a previous one already exists",
+			want: []parser.Match{
+				{
+					Players: []parser.Player{
+						{
+							ID:   2,
+							Name: "test2",
+						},
+						{
+							ID:   3,
+							Name: "test3",
+						},
+					},
+					Events: []parser.Kill{
+						{
+							KillerID:    1022,
+							VictimID:    2,
+							MeanOfDeath: 22,
+						},
+					},
+				},
+				{
+					Players: []parser.Player{
+						{
+							ID:   2,
+							Name: "test22",
+						},
+						{
+							ID:   3,
+							Name: "test33",
+						},
+					},
+					Events: []parser.Kill{
+						{
+							KillerID:    3,
+							VictimID:    2,
+							MeanOfDeath: 22,
+						},
+					},
+				},
+			},
+			expectError: false,
+			parameters: Parameters{
+				Matchs: []parser.Match{
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test2",
+							},
+							{
+								ID:   3,
+								Name: "test3",
+							},
+						},
+						Events: []parser.Kill{
+							{
+								KillerID:    1022,
+								VictimID:    2,
+								MeanOfDeath: 22,
+							},
+						},
+					},
+					{
+						Players: []parser.Player{
+							{
+								ID:   2,
+								Name: "test22",
+							},
+							{
+								ID:   3,
+								Name: "test33",
+							},
+						},
+						Events: []parser.Kill{},
+					},
+				},
+				Line: ` 21:07 Kill: 3 2 22: test33 killed test22 by MOD_TRIGGER_HURT`,
 			},
 		},
 	}
