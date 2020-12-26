@@ -46,7 +46,7 @@ func ParseLine(gameID int, slc *[]Match, line string) error {
 		}
 		pInfos := re.FindStringSubmatch(matchs[2])
 		userID, _ := strconv.Atoi(pInfos[1])
-		userIndex := _findUserByID((*slc)[gameID].Players, userID)
+		userIndex := FindUserByID((*slc)[gameID].Players, userID)
 		if userIndex == -1 {
 			return errors.New("Trying to update a user that doesn't exists")
 		}
@@ -66,11 +66,11 @@ func ParseLine(gameID int, slc *[]Match, line string) error {
 		killerID, _ := strconv.Atoi(pInfos[1])
 		victimID, _ := strconv.Atoi(pInfos[2])
 		meanOfDeath, _ := strconv.Atoi(pInfos[3])
-		killerIndex := _findUserByID((*slc)[gameID].Players, killerID)
+		killerIndex := FindUserByID((*slc)[gameID].Players, killerID)
 		if killerIndex == -1 && killerID != _worldID {
 			return errors.New("Kill by a non existent player")
 		}
-		victimIndex := _findUserByID((*slc)[gameID].Players, victimID)
+		victimIndex := FindUserByID((*slc)[gameID].Players, victimID)
 		if victimIndex == -1 {
 			return errors.New("Kill attempt to a non existent player")
 		}
@@ -85,7 +85,8 @@ func ParseLine(gameID int, slc *[]Match, line string) error {
 	return nil
 }
 
-func _findUserByID(players []Player, id int) int {
+// FindUserByID test
+func FindUserByID(players []Player, id int) int {
 	index := -1
 	for key, value := range players {
 		if value.ID == id {
