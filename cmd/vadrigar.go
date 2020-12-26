@@ -52,16 +52,21 @@ activate an option to show to you the number of deaths by mean in each game.`,
 
 		scanner := bufio.NewScanner(file)
 		matches := []parser.Match{}
+		r, err := regexp.Compile(`\d+:\d+ (\w+): (.*)`)
+		if err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
 		for scanner.Scan() {
-			matched, err := regexp.MatchString(`\d+:\d+ (\w+): (.*)`, scanner.Text())
-			if err != nil {
-				log.Fatal(err)
-				os.Exit(1)
-			}
+			matched := r.MatchString(scanner.Text())
 			if !matched {
 				continue
 			}
-			parser.ParseLine(len(matches)-1, &matches, scanner.Text())
+			parseErr := parser.ParseLine(len(matches)-1, &matches, scanner.Text())
+			if parseErr != nil {
+				log.Fatal(parseErr)
+				os.Exit(1)
+			}
 		}
 
 		if err := scanner.Err(); err != nil {
@@ -81,7 +86,11 @@ activate an option to show to you the number of deaths by mean in each game.`,
 			os.Exit(1)
 		}
 		if outputFile != "" {
-			ioutil.WriteFile(outputFile, j, 0644)
+			err := ioutil.WriteFile(outputFile, j, 0644)
+			if err != nil {
+				log.Fatal(err)
+				os.Exit(1)
+			}
 			os.Exit(0)
 		}
 		fmt.Println(string(j))
@@ -95,5 +104,9 @@ func init() {
 	vadrigarCmd.Flags().BoolVarP(&meanOfDeath, "mean-of-death", "m", false, "Enable or disable logs of deaths by mean")
 	vadrigarCmd.Flags().StringVarP(&logFile, "log-file", "f", "", "Path for the Quake 3 Arena Server logs file")
 	vadrigarCmd.Flags().StringVarP(&outputFile, "output-file", "o", "", "Output file. If not set, will print as JSON in stdout")
-	vadrigarCmd.MarkFlagRequired("log-file")
+	err := vadrigarCmd.MarkFlagRequired("log-file")
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
 }
