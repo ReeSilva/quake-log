@@ -29,6 +29,9 @@ jobs:
         with:
           go-version: '1.15.6'
 
+      - name: run tests verbose
+        run: go test -v ./...
+      
       - name: run tests
         run: go test -json ./... > test.json
 
