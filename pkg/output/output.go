@@ -6,7 +6,7 @@ import (
 	"github.com/reesilva/quake-log/pkg/parser"
 )
 
-// MatchReport test
+// MatchReport is used to store all infos from a match of Quake 3 Arena Server
 type MatchReport struct {
 	TotalKills   int            `json:"total_kills"`
 	Players      []string       `json:"players"`
@@ -46,7 +46,9 @@ var _meansOfDeath []string = []string{
 	"MOD_GRAPPLE",
 }
 
-// CreateMatchReport test
+// CreateMatchReport receives a slice of Parser.Match itens and a boolean to define if
+// it will also create an object of death by means and then will return a map of
+// output.MatchReport or an error if something brakes.
 func CreateMatchReport(matches []parser.Match, deathByMeans bool) (map[string]MatchReport, error) {
 	matchesReport := map[string]MatchReport{}
 	if len(matches) == 0 {
