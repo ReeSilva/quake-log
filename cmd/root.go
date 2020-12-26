@@ -1,4 +1,4 @@
-/*Package cmd test
+/*Package cmd handle all commands for a cli of quake-log.
 Copyright © 2020 Renato Biancalana da Silva <reesilva@pm.me>
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,9 +32,6 @@ var rootCmd = &cobra.Command{
 	Use:   "quake-log",
 	Short: "Quake Log is a log parser to Quake 3 Arena Server logs",
 	Long:  `The Quake-Log applications ban be used to parse all logs from Quake 3 Arena server and output it to you.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -49,14 +46,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.quake-log.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 

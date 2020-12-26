@@ -1,4 +1,4 @@
-/*Package cmd test
+/*Package cmd handle all commands for a cli of quake-log.
 Copyright © 2020 Renato Biancalana da Silva <reesilva@pm.me>
 
 Licensed under the Apache License, Version 2.0 (the "License");

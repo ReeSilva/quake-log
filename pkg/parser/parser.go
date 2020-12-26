@@ -8,7 +8,9 @@ import (
 
 const _worldID int = 1022
 
-// ParseLine testing
+// ParseLine will receive a game id, a slice of matches and a string
+// of a line from log file of Quake 3 Arena Server and then parse
+// this line and add it to the Matches slice where appropriated.
 func ParseLine(gameID int, slc *[]Match, line string) error {
 	if line == "" {
 		return errors.New("Error on Parse Line")
@@ -85,7 +87,9 @@ func ParseLine(gameID int, slc *[]Match, line string) error {
 	return nil
 }
 
-// FindUserByID test
+// FindUserByID FindUserById receives a slice of Players and a
+// Quake 3 Arena Server user ID and return the index in the slice
+// for that specific player.
 func FindUserByID(players []Player, id int) int {
 	index := -1
 	for key, value := range players {
@@ -97,20 +101,20 @@ func FindUserByID(players []Player, id int) int {
 	return index
 }
 
-// Player doc
+// Player stores infos from a player of Quake 3 Arena.
 type Player struct {
 	ID   int
 	Name string
 }
 
-// Kill doc
+// Kill stores info about a kill inside a Quake 3 Arena Server.
 type Kill struct {
 	KillerID    int
 	VictimID    int
 	MeanOfDeath int
 }
 
-// Match doc
+// Match will store infos about a match on a Quake 3 Arena Server.
 type Match struct {
 	Players []Player
 	Events  []Kill
