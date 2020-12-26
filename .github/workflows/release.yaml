@@ -1,3 +1,5 @@
+name: Release by tag
+
 on:
   release:
     types: [created]

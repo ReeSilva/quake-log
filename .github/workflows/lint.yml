@@ -2,9 +2,9 @@ name: Lint Go Code
 
 on:
   push:
-    branches:
-      - ci-actions-config
-      - main
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
 
 jobs:
   lint:
